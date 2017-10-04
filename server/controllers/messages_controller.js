@@ -15,9 +15,10 @@ module.exports = {
     messages.forEach((message, index) => {
       if (message.id === +req.params.id) {
         messages[index] = Object.assign(message, req.body);
+        res.status(200).send(messages);
       }
     });
-    res.status(200).send(messages);
+    res.status(666).send("NOOOOOOO!!!!!");
   },
   delete: (req, res) => {
     messages = messages.filter((message) => messages.id !== req.params.id);
