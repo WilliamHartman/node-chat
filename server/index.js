@@ -2,7 +2,7 @@ const express = require('express'),
       bodyParser = require('body-parser'),
       app = express(),
       port = 3000,
-      baseURL = `http://localhost:3000/api/messages`,
+      baseURL = `/api/messages`,
       message_ctrl = require(`./controllers/messages_controller.js`);
 
 app.use(bodyParser.json());

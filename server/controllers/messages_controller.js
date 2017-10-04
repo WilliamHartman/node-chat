@@ -3,8 +3,8 @@ var id = 0;
 
 module.exports = {
   create: (req, res) => {
-    const { message, time } = req.body;
-    messages.push({ id, message, time });
+    const { text, time } = req.body;
+    messages.push({ id, text, time });
     id++;
     res.status(200).send(messages);
   },
@@ -21,7 +21,7 @@ module.exports = {
     res.status(666).send("NOOOOOOO!!!!!");
   },
   delete: (req, res) => {
-    messages = messages.filter((message) => messages.id !== req.params.id);
+    messages = messages.filter((message) => message.id !== +req.params.id);
     res.status(200).send(messages);
   }
 }
