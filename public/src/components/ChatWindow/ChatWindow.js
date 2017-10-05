@@ -9,14 +9,16 @@ import Message from './Message/Message';
 import dateCreator from '../../utils/dateCreator';
 
 export default class ChatWindow extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       messages: [],
-      text: ''
+      text: '',
+      name: ''
     };
 
-    this.handleChange = this.handleChange.bind( this );
+    this.handleTextChange = this.handleTextChange.bind( this );
+    this.handleNameChange = this.handleNameChange.bind( this );
     this.createMessage = this.createMessage.bind( this );
     this.editMessage = this.editMessage.bind( this );
     this.removeMessage = this.removeMessage.bind( this );
@@ -28,14 +30,22 @@ export default class ChatWindow extends Component {
     });
   }
 
-  handleChange( event ) {
-    this.setState({ text: event.target.value });
+  handleTextChange( event ) {
+    this.setState({ 
+      text: event.target.value, 
+    });
+  }
+
+  handleNameChange( event ) {
+    this.setState({
+      name: event.target.value
+    })
   }
 
   createMessage( event ) {
-    const { text } = this.state;
+    const { text, name } = this.state;
     if ( event.key === "Enter" && text.length !== 0 ) {
-      axios.post( url, { text, time: dateCreator() } ).then( response => {
+      axios.post( url, { text, time: dateCreator(), name } ).then( response => {
         this.setState({ messages: response.data });
       });
 
@@ -56,14 +66,29 @@ export default class ChatWindow extends Component {
     });
   }
 
+  refreshChatBox() {
+    setInterval(axios.get(url).then( response => {
+      this.setState({ messages: response.data })
+    }), 1000)
+  }
+
+  componentDidMount = () => {
+    this.refreshChatBox();
+  }
+  
+
   render() {
+    console.log(`ChatWindow.js: ${JSON.stringify(this.state.messages)}`);
+    console.log(`ChatWindow.js state: ${this.state.name}`);
     return (
       <div id="ChatWindow__container">
+      <input placeholder="Enter your name"
+             onChange={ this.handleNameChange }/>
         <div id="ChatWindow__messagesParentContainer">
           <div id="ChatWindow__messagesChildContainer">
             {
               this.state.messages.map( message => (
-                <Message id={ message.id} key={ message.id } text={ message.text } time={ message.time } edit={ this.editMessage } remove={ this.removeMessage } />
+                <Message id={ message.id} key={ message.id } text={ message.text } time={ message.time } edit={ this.editMessage } remove={ this.removeMessage } name={message.name}/>
               ))
             }
           </div>
@@ -71,7 +96,7 @@ export default class ChatWindow extends Component {
         <div id="ChatWindow__newMessageContainer">
           <input placeholder="What's on your mind? Press enter to send." 
                  onKeyPress={ this.createMessage }
-                 onChange={ this.handleChange }
+                 onChange={ this.handleTextChange }
                  value={ this.state.text }
           />
         </div>
